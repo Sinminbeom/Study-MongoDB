@@ -1,0 +1,132 @@
+db.bulk.bulkWrite(
+    [
+        {insertOne: {doc: 1, order: 1}},
+        {insertOne: {doc: 2, order: 2}},
+        {insertOne: {doc: 3, order: 3}},
+        {insertOne: {doc: 4, order: 4}},
+        {insertOne: {doc: 5, order: 5}},
+        {insertOne: {doc: 6, order: 6}},
+        {
+            deleteOne: {
+                filter: {doc: 3}
+            }
+        },
+        {
+            updateOne: {
+                filter: { doc: 2 },
+                update: {
+                    $set: {doc: 12}
+                }
+            }
+        }
+    ]
+    );
+
+db.bulk.bulkWrite(
+    [
+        {insertOne: {doc: 1, order: 1}},
+        {insertOne: {doc: 2, order: 2}},
+        {insertOne: {doc: 3, order: 3}},
+        {insertOne: {doc: 4, order: 4}},
+        {insertOne: {doc: 5, order: 5}},
+        {insertOne: {doc: 6, order: 6}},
+        {
+            updateOne: {
+                filter: { doc: 2 },
+                update: {
+                    $set: {doc: 3}
+                }
+            }
+        }
+        {
+            deleteMany: {
+                filter: {doc: 3}
+            }
+        },
+    ],
+    // 순서가 없이 실행되서 성능 up
+    {ordered: false}
+    );
+
+db.bulk.findAndModify({
+    query: { doc: 5 },
+    update: { $inc: {doc: 1} }
+})
+
+db.sales.find({
+    "items.name": "binder",
+    "items.quantity": {$lte: 6}
+})
+
+db.movies.find(
+    {
+        $and: [
+            { runtime: { $lte: 100 } },
+            { type: { $ne: 'series' } },
+            {
+                $or: [
+                    { year: { $gte: 2015 }},
+                    { year: { $lte: 1925 }},
+                ]
+            }
+        ]
+    },
+    {
+        runtime: 1, type: 1, year: 1
+    }
+    ).sort({year: -1})
+
+db.movies.find({
+    $or: [
+        {viewer: { $gte: 4.5 }},
+        {critic: { $gte: 9.5 }},
+    ]
+})
+
+use sample_supplies;
+
+db.sales.find({
+    "items.name": "binder",
+    "items.quantity": {$lte: 6}
+})
+
+db.movies.find()
+
+db.movies.find(
+    {
+        $or: [
+            {"tomatoes.viewer.rating": { $gte: 4.5}},
+            {"tomatoes.critic.rating": { $gte: 9.5}},
+        ]
+    },
+    {
+        title: 1, runtime: 1, tomatoes: 1, _id: 1
+    }).sort({runtime: -1}).limit(5)
+
+use sample_restaurants
+
+db.restaurants.find({
+    borough: 'Queens',
+    "grades.grade": {$ne: 'A'},
+    grades: {$size: 3}
+},{ borough: 1, grades: 1, _id: 0})
+
+db.restaurants.find({
+    // $and: [
+    //     { borough: "Queens"},
+    //     {grades: {$elemMatch: {grade: 'A'}}},
+    //     {grades: {$elemMatch: {grade: 'Z'}}},
+    // ]
+}, {grades: 1})
+
+db.restaurants.find(
+    {
+        borough: 'Queens',
+        "grades.score": {$gte: 70},
+    },
+    {
+        "grades.$[]": 1
+    }
+    )
+
+
