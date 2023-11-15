@@ -1,0 +1,36 @@
+use sample_supplies
+
+db.sales.find(
+    {
+        saleDate: {
+            $gte: ISODate("2015-01-01T00:00:00.000Z")
+        }
+    },
+    {
+        saleDate: 1,
+        _id: 0
+    }
+).explain("executionStats")
+
+db.sales.createIndex({saleDate: 1})
+
+db.sales.find(
+    {
+        storeLocation: 'Denver',
+        "customer.age": 75
+    }
+).explain('executionStats')
+
+db.sales.createIndex({storeLocation: 1})
+
+db.sales.find(
+    {
+        storeLocation: 'Denver',
+        "customer.age": 75
+    },
+    {
+        _id: 0,
+        storeLocation: 1,
+        "customer.age": 1
+    }
+).explain('executionStats')
